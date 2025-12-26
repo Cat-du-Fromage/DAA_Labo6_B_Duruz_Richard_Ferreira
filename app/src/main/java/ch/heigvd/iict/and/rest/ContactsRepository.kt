@@ -1,7 +1,11 @@
 package ch.heigvd.iict.and.rest
 
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.Contact
+import ch.heigvd.iict.and.rest.models.SyncState
+import ch.heigvd.iict.and.rest.models.toDTO
 import ch.heigvd.iict.and.rest.models.toEntity
 import ch.heigvd.iict.and.rest.rest.ContactApiService
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,8 +21,52 @@ class ContactsRepository(private val contactsDao: ContactsDao,
     //val allContacts = contactsDao.getAllContacts()
     val allContacts = contactsDao.getContacts()
 
-    fun create(contact: Contact) {
-        contactsDao.insert(contact)
+    suspend fun createContact(token: String, contact: Contact) = withContext(dispatcher){
+        contact.syncState = SyncState.CREATED
+        contact.remoteId = null
+
+        val localId = contactsDao.insert(contact)
+        contact.id = localId
+
+        try {
+            val contactDTO = contactService.createContact(token,contact.toDTO())
+
+            // success
+            contact.remoteId = contactDTO.id
+            contact.syncState = SyncState.SYNCED
+
+            contactsDao.update(contact)
+        } catch (e: Exception) {
+            // failed to create contact - will be synced at a later time
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun updateContact(token: String, contact: Contact) = withContext(dispatcher){
+        contact.syncState = SyncState.UPDATED
+
+        contactsDao.update(contact)
+
+        try {
+            // update on remote
+            // then here
+        } catch (e: Exception) {
+            // failed to update contact
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun deleteContact(token: String, contact: Contact) = withContext(dispatcher){
+        contact.syncState = SyncState.DELETED
+        contactsDao.update(contact)
+
+        try {
+            // delete on remote
+            // then here if success
+        } catch (e: Exception) {
+            // failed to delete contact
+            e.printStackTrace()
+        }
     }
 
     suspend fun clearAllContacts() = withContext(dispatcher){
@@ -42,7 +90,7 @@ class ContactsRepository(private val contactsDao: ContactsDao,
             }
         } catch (e: Exception) {
             // failed to get contacts
-            null
+            e.printStackTrace()
         }
     }
 

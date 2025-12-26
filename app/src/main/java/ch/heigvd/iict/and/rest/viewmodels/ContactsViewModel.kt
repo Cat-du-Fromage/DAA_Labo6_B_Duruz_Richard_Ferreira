@@ -49,13 +49,30 @@ class ContactsViewModel(app: Application) : AndroidViewModel(app) {
         _selectedContact.value = null
     }
 
-    fun create(contact: Contact) {
-        repository.create(contact)
+    fun save(contact: Contact) {
+        viewModelScope.launch {
+            val token = enrollmentToken ?: return@launch
+
+            if (contact.id == null) { // No id -> new contact
+                repository.createContact(token, contact)
+            } else { // id -> update
+                repository.updateContact(token, contact)
+            }
+            closeEditor()
+        }
+    }
+
+    fun delete(contact: Contact) {
+        viewModelScope.launch {
+            val token = enrollmentToken ?: return@launch
+            repository.deleteContact(token, contact)
+            closeEditor()
+        }
     }
 
     fun enroll() {
         viewModelScope.launch {
-            repository.clearAllContacts() // crashes here if not commented
+            repository.clearAllContacts()
 
             enrollmentToken = repository.enroll()
             if (enrollmentToken == null) {

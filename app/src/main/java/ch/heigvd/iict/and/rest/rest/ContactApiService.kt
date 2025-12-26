@@ -6,6 +6,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 class ContactApiService {
@@ -38,6 +39,14 @@ class ContactApiService {
     suspend fun getContacts(uuid: String): List<ContactDTO> {
         return client.get("$baseUrl/contacts") {
             header("X-UUID", uuid)
+        }.body()
+    }
+
+    suspend fun createContact(uuid: String, contact: ContactDTO): ContactDTO {
+        return client.post("$baseUrl/contacts") {
+            header("X-UUID", uuid)
+            contentType(ContentType.Application.Json)
+            setBody(contact)
         }.body()
     }
 

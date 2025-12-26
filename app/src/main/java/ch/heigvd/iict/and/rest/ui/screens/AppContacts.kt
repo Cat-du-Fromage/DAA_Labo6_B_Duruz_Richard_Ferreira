@@ -59,7 +59,10 @@ fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
     { padding ->
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
             if (editionMode){
-                ScreenContactEditor(contact = selectedContact, onCancel = { contactsViewModel.closeEditor() },onDelete = { contactsViewModel.closeEditor() }, onSave = { contactsViewModel.closeEditor() })
+                ScreenContactEditor(contact = selectedContact,
+                    onCancel = { contactsViewModel.closeEditor() },
+                    onDelete = { selectedContact?.let { contactsViewModel.delete(it) } },
+                    onSave = { contact -> contactsViewModel.save(contact) })
             }else{
                 ScreenContactList(contacts) { selectedContact ->
                     //Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()

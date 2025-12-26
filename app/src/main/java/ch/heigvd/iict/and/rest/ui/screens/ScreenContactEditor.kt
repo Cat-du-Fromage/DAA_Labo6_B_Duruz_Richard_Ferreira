@@ -35,7 +35,7 @@ import java.util.Locale
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : () -> Unit , onDelete : () -> Unit) {
+fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Contact) -> Unit , onDelete : () -> Unit) {
 
     val context = LocalContext.current
 
@@ -54,6 +54,8 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : () -
         if (name.isBlank()) return null
 
         return Contact(
+            id = contact?.id,
+            remoteId = contact?.remoteId,
             name = name,
             firstname = firstname,
             email = email,
@@ -78,37 +80,37 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : () -
 
         TextField(value = name,
             onValueChange = { name = it },
-            label = { Text("Name") },
+            label = { Text(text = stringResource(R.string.screen_detail_name_subtitle)) },
             modifier = Modifier.fillMaxWidth())
         TextField(value = firstname,
             onValueChange = { firstname = it },
-            label = { Text("Firstname") },
+            label = { Text(text = stringResource(R.string.screen_detail_firstname_subtitle)) },
             modifier = Modifier.fillMaxWidth())
         TextField(value = email,
             onValueChange = { email = it },
-            label = { Text("E-Mail") },
+            label = { Text(text = stringResource(R.string.screen_detail_email_subtitle)) },
             modifier = Modifier.fillMaxWidth())
 
         // Use the new helper here
-        DateField(label = "Birthday",
+        DateField(label = stringResource(R.string.screen_detail_birthday_subtitle),
             value = birthday,
             onValueChange = { birthday = it })
 
         TextField(value = address,
             onValueChange = { address = it },
-            label = { Text("Address") },
+            label = { Text(text = stringResource(R.string.screen_detail_address_subtitle)) },
             modifier = Modifier.fillMaxWidth())
         TextField(value = zip,
             onValueChange = { zip = it },
-            label = { Text("Zip") },
+            label = { Text(text = stringResource(R.string.screen_detail_zip_subtitle)) },
             modifier = Modifier.fillMaxWidth())
         TextField(value = city,
             onValueChange = { city = it },
-            label = { Text("City") },
+            label = { Text(text = stringResource(R.string.screen_detail_city_subtitle)) },
             modifier = Modifier.fillMaxWidth())
 
         // Phone Type Radio Group
-        Text("Phone type",
+        Text(text = stringResource(R.string.screen_detail_phonetype_subtitle),
             modifier = Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.bodySmall)
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -121,19 +123,19 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : () -
 
         TextField(value = phoneNumber,
             onValueChange = { phoneNumber = it },
-            label = { Text("Phone number") },
+            label = { Text(text = stringResource(R.string.screen_detail_phonenumber_subtitle)) },
             modifier = Modifier.fillMaxWidth())
 
         Row(
             modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Button(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("CANCEL") }
+            Button(onClick = onCancel, modifier = Modifier.weight(1f)) { Text(text = stringResource(R.string.screen_detail_btn_cancel)) }
 
             if (contact != null) {
                 // Delete button only shown in Modification mode
                 Button(onClick = { onDelete() }, modifier = Modifier.weight(1f)) {
-                    Text("DELETE")
+                    Text(text = stringResource(R.string.screen_detail_btn_delete))
                     // TODO : delete Icon
                     Icon(painterResource(R.drawable.add), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(18.dp))
                 }
@@ -141,30 +143,17 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : () -
 
             // Create/Save button
             Button(
-                onClick = { onSave() },
+                onClick = {
+                    val contact = createContact()
+                    if (contact != null) onSave(contact) },
                 modifier = Modifier.weight(1f)
             ) {
-                Text(if (contact == null) "CREATE" else "SAVE")
+                Text(if (contact == null) stringResource(R.string.screen_detail_btn_create) else stringResource(R.string.screen_detail_btn_save))
                 // TODO : save Icon
                 Icon(painterResource(R.drawable.add), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(18.dp))
             }
         }
     }
-}
-
-@Composable
-fun StandardTextField(label: String, value: String, enabled: Boolean = true, onValueChange: (String) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent
-        )
-    )
 }
 
 @Composable
