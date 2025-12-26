@@ -42,6 +42,12 @@ class ContactApiService {
         }.body()
     }
 
+    suspend fun getContact(uuid: String, remoteId: Long): ContactDTO {
+        return client.get("$baseUrl/contacts/$remoteId") {
+            header("X-UUID", uuid)
+        }.body()
+    }
+
     suspend fun createContact(uuid: String, contact: ContactDTO): ContactDTO {
         return client.post("$baseUrl/contacts") {
             header("X-UUID", uuid)
@@ -50,5 +56,19 @@ class ContactApiService {
         }.body()
     }
 
-    // TODO : more to come
+    suspend fun updateContact(uuid: String, contact: ContactDTO): ContactDTO {
+        return client.put("$baseUrl/contacts/${contact.id}") {
+            header("X-UUID", uuid)
+            contentType(ContentType.Application.Json)
+            setBody(contact)
+        }.body()
+    }
+
+    suspend fun deleteContact(uuid: String, remoteId: Long): Boolean {
+        val response = client.delete("$baseUrl/contacts/$remoteId") {
+            header("X-UUID", uuid)
+        }
+
+        return response.status == HttpStatusCode.NoContent
+    }
 }

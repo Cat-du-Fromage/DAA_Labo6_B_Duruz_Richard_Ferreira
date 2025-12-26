@@ -44,12 +44,14 @@ class ContactsRepository(private val contactsDao: ContactsDao,
 
     suspend fun updateContact(token: String, contact: Contact) = withContext(dispatcher){
         contact.syncState = SyncState.UPDATED
-
         contactsDao.update(contact)
 
         try {
             // update on remote
-            // then here
+            val contactDTO = contactService.updateContact(token,contact.toDTO())
+            contact.remoteId = contactDTO.id
+            contact.syncState = SyncState.SYNCED
+            contactsDao.update(contact)
         } catch (e: Exception) {
             // failed to update contact
             e.printStackTrace()
@@ -61,8 +63,9 @@ class ContactsRepository(private val contactsDao: ContactsDao,
         contactsDao.update(contact)
 
         try {
-            // delete on remote
-            // then here if success
+            val deleted = contactService.deleteContact(token,contact.remoteId!!)
+            if (deleted)
+            contactsDao.delete(contact)
         } catch (e: Exception) {
             // failed to delete contact
             e.printStackTrace()
