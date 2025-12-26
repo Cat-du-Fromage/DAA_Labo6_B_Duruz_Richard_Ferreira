@@ -1,6 +1,8 @@
 package ch.heigvd.iict.and.rest.viewmodels
 
 import android.app.Application
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
@@ -12,10 +14,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
+import java.util.UUID
 
 class ContactsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = (application as ContactsApplication) .repository
+    private val sharedPreferences = application.getSharedPreferences("CONTACTS_PREFERENCES", Context.MODE_PRIVATE)
+    private var enrollmentToken : String?
+        get() = sharedPreferences.getString("ENROLLMENT_TOKEN", null)
+        set(value) {
+            sharedPreferences.edit { putString("ENROLLMENT_TOKEN", value.toString()) }
+        }
 
     val allContacts : StateFlow<List<Contact>> = repository.allContacts.stateIn(
         scope = viewModelScope,
@@ -40,18 +50,19 @@ class ContactsViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun create(contact: Contact) {
-        viewModelScope.launch {
-            //TODO
-        }
-    }
-
-    fun update(contact: Contact){
-
+        repository.create(contact)
     }
 
     fun enroll() {
         viewModelScope.launch {
-            //TODO
+            repository.clearAllContacts() // crashes here if not commented
+
+            enrollmentToken = repository.enroll()
+            if (enrollmentToken == null) {
+                return@launch // TODO : check what @launch is. autocomplete did it
+            }
+
+            repository.fetchContacts(enrollmentToken!!)
         }
     }
 

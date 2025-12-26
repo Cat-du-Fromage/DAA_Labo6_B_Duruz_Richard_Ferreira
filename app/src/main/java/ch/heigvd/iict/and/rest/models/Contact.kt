@@ -1,7 +1,9 @@
 package ch.heigvd.iict.and.rest.models
 
+import android.icu.text.SimpleDateFormat
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import java.util.*
 
 enum class SyncState{
@@ -25,4 +27,52 @@ data class Contact(
     var phoneNumber: String?,
     var remoteId: Long? = null,
     var syncState: SyncState = SyncState.CREATED
+)
+
+// Class for data coming and sent to the remote
+@Serializable
+data class ContactDTO(
+    val id: Long? = null, // remoteId
+    val name: String,
+    val firstname: String?,
+    val birthday: String?, // ISO format from remote
+    val email: String?,
+    val address: String?,
+    val zip: String?,
+    val city: String?,
+    val type: PhoneType?,
+    val phoneNumber: String?
+)
+
+private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US)
+
+// Entity to DTO
+fun Contact.toDTO() = ContactDTO(
+    id = remoteId, // On envoie l'ID serveur
+    name = name,
+    firstname = firstname,
+    birthday = birthday?.let { isoFormat.format(it.time) },
+    email = email,
+    address = address,
+    zip = zip,
+    city = city,
+    type = type,
+    phoneNumber = phoneNumber
+)
+
+// DTO to Entity
+fun ContactDTO.toEntity() = Contact(
+    remoteId = id, // store the remoteId
+    name = name,
+    firstname = firstname,
+    birthday = birthday?.let { str ->
+        Calendar.getInstance().apply { time = isoFormat.parse(str) ?: Date() }
+    },
+    email = email,
+    address = address,
+    zip = zip,
+    city = city,
+    type = type,
+    phoneNumber = phoneNumber,
+    syncState = SyncState.SYNCED // Data from remote is always synced
 )
