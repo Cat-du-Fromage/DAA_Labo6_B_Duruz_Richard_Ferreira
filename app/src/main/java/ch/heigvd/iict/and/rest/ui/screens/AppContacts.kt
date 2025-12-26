@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,11 +30,21 @@ import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModel
 fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
     val context = LocalContext.current
     val contacts : List<Contact> by contactsViewModel.allContacts.collectAsStateWithLifecycle()
+    val editionMode by contactsViewModel.editionMode.collectAsStateWithLifecycle()
+    val selectedContact by contactsViewModel.selectedContact.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
+                navigationIcon = {
+                    if (editionMode) {
+                        IconButton(onClick = { contactsViewModel.closeEditor() }) {
+                            // TODO : Have a back arrow icon
+                            Icon(painter = painterResource(R.drawable.add), contentDescription = "Back")
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = {
                         contactsViewModel.enroll()
@@ -53,8 +66,13 @@ fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
     )
     { padding ->
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
-            ScreenContactList(contacts) { selectedContact ->
-                Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()
+            if (editionMode){
+                ScreenContactEditor(contact = selectedContact, onCancel = { contactsViewModel.closeEditor() },onDelete = { contactsViewModel.closeEditor() }, onSave = { contactsViewModel.closeEditor() })
+            }else{
+                ScreenContactList(contacts) { selectedContact ->
+                    //Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()
+                    contactsViewModel.openEditor(selectedContact)
+                }
             }
         }
     }
