@@ -37,14 +37,6 @@ fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
-                navigationIcon = {
-                    if (editionMode) {
-                        IconButton(onClick = { contactsViewModel.closeEditor() }) {
-                            // TODO : Have a back arrow icon
-                            Icon(painter = painterResource(R.drawable.add), contentDescription = "Back")
-                        }
-                    }
-                },
                 actions = {
                     IconButton(onClick = {
                         contactsViewModel.enroll()
@@ -58,7 +50,7 @@ fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                Toast.makeText(context, "TODO - Création d'un nouveau contact", Toast.LENGTH_SHORT).show()
+                contactsViewModel.openEditor(null)
             }){
                 Icon(painter = painterResource(R.drawable.add), contentDescription = null)
             }
