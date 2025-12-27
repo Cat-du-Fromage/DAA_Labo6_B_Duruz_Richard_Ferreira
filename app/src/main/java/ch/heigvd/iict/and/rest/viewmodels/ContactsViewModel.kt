@@ -76,7 +76,7 @@ class ContactsViewModel(app: Application) : AndroidViewModel(app) {
 
             enrollmentToken = repository.enroll()
             if (enrollmentToken == null) {
-                return@launch // TODO : check what @launch is. autocomplete did it
+                return@launch
             }
 
             repository.fetchContacts(enrollmentToken!!)
@@ -85,7 +85,10 @@ class ContactsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun refresh() {
         viewModelScope.launch {
-            //TODO
+            if (enrollmentToken == null) {
+                return@launch
+            }
+            repository.synchronize(enrollmentToken!!)
         }
     }
 

@@ -30,6 +30,9 @@ interface ContactsDao {
     @Query("SELECT * FROM Contact WHERE syncState IN (:states)")
     fun getContacts(vararg states: SyncState = arrayOf(SyncState.SYNCED, SyncState.CREATED, SyncState.UPDATED)) : Flow<List<Contact>>
 
+    @Query("SELECT * FROM Contact WHERE syncState IN (:states)")
+    fun getContactsAsList(vararg states: SyncState = arrayOf(SyncState.SYNCED, SyncState.CREATED, SyncState.UPDATED)) : List<Contact>
+
     @Query("SELECT * FROM Contact WHERE id = :id")
     fun getContactById(id : Long) : Contact?
 

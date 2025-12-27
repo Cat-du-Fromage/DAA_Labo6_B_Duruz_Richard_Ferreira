@@ -64,11 +64,51 @@ class ContactsRepository(private val contactsDao: ContactsDao,
 
         try {
             val deleted = contactService.deleteContact(token,contact.remoteId!!)
-            if (deleted)
-            contactsDao.delete(contact)
+            if (deleted){
+                contactsDao.delete(contact)
+            }
         } catch (e: Exception) {
             // failed to delete contact
             e.printStackTrace()
+        }
+    }
+
+    suspend fun synchronize(token: String) = withContext(dispatcher) {
+        contactsDao.getContactsAsList(
+            SyncState.CREATED,
+            SyncState.UPDATED,
+            SyncState.DELETED
+        ).forEach { contact ->
+            try {
+                when (contact.syncState) {
+                    SyncState.CREATED -> {
+                        val dto = contact.toDTO()
+                        val createdDto = contactService.createContact(token, dto)
+                        contact.remoteId = createdDto.id
+                        contact.syncState = SyncState.SYNCED
+                        contactsDao.update(contact)
+                    }
+                    SyncState.UPDATED -> {
+                        contact.remoteId?.let {
+                            val contactDTO = contactService.updateContact(token,contact.toDTO())
+                            contact.remoteId = contactDTO.id
+                            contact.syncState = SyncState.SYNCED
+                            contactsDao.update(contact)
+                        }
+                    }
+                    SyncState.DELETED -> {
+                        contact.remoteId?.let { rid ->
+                            val success = contactService.deleteContact(token, rid)
+                            if (success) {
+                                contactsDao.delete(contact)
+                            }
+                        } ?: contactsDao.delete(contact) // if no remoteId, delete locally
+                    }
+                    else -> {} // SYNCED goes here, nothing to sync
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
