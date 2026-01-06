@@ -42,12 +42,6 @@ class ContactApiService {
         }.body()
     }
 
-    suspend fun getContact(uuid: String, remoteId: Long): ContactDTO {
-        return client.get("$baseUrl/contacts/$remoteId") {
-            header("X-UUID", uuid)
-        }.body()
-    }
-
     suspend fun createContact(uuid: String, contact: ContactDTO): ContactDTO {
         return client.post("$baseUrl/contacts") {
             header("X-UUID", uuid)
