@@ -2,17 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c66e77ae412b3080fcf14cc5431c4cf4",
+    "identityHash": "410ea14d38982f0e910a029613e382b2",
     "entities": [
       {
         "tableName": "Contact",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `firstname` TEXT, `birthday` INTEGER, `email` TEXT, `address` TEXT, `zip` TEXT, `city` TEXT, `type` TEXT, `phoneNumber` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `firstname` TEXT, `birthday` INTEGER, `email` TEXT, `address` TEXT, `zip` TEXT, `city` TEXT, `type` TEXT, `phoneNumber` TEXT, `remoteId` INTEGER, `syncState` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "name",
@@ -23,66 +22,66 @@
           {
             "fieldPath": "firstname",
             "columnName": "firstname",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "birthday",
             "columnName": "birthday",
-            "affinity": "INTEGER",
-            "notNull": false
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "email",
             "columnName": "email",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "address",
             "columnName": "address",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "zip",
             "columnName": "zip",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "city",
             "columnName": "city",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "type",
             "columnName": "type",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "phoneNumber",
             "columnName": "phoneNumber",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "remoteId",
+            "columnName": "remoteId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "syncState",
+            "columnName": "syncState",
             "affinity": "TEXT",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "id"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": []
+          ]
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c66e77ae412b3080fcf14cc5431c4cf4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '410ea14d38982f0e910a029613e382b2')"
     ]
   }
 }
