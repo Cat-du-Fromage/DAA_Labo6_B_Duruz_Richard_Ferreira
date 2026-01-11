@@ -12,7 +12,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,10 +20,17 @@ import ch.heigvd.iict.and.rest.R
 import ch.heigvd.iict.and.rest.models.Contact
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModel
 
+/**
+AppContacts.kt
+ * Main composable for app
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
-    val context = LocalContext.current
     val contacts : List<Contact> by contactsViewModel.allContacts.collectAsStateWithLifecycle()
     val editionMode by contactsViewModel.editionMode.collectAsStateWithLifecycle()
     val selectedContact by contactsViewModel.selectedContact.collectAsStateWithLifecycle()
@@ -61,7 +67,6 @@ fun AppContact(contactsViewModel : ContactsViewModel = viewModel()) {
                     onSave = { contact -> contactsViewModel.save(contact) })
             }else{
                 ScreenContactList(contacts) { selectedContact ->
-                    //Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()
                     contactsViewModel.openEditor(selectedContact)
                 }
             }

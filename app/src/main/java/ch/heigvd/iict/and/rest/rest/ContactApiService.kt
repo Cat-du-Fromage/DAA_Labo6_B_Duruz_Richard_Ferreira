@@ -9,6 +9,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+
+/**
+ContactApiService.kt
+ * Api service to interact with remote
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
 class ContactApiService {
     private val client = HttpClient(Android) {
         install(ContentNegotiation) {
@@ -26,16 +35,10 @@ class ContactApiService {
 
     private val baseUrl = "https://daa.iict.ch"
 
-    /**
-     * Enroll to get a new UUID and Contacts created on the remote
-     */
     suspend fun enroll(): String {
         return client.get("$baseUrl/enroll").body()
     }
 
-    /**
-     * Get all contacts for a given UUID
-     */
     suspend fun getContacts(uuid: String): List<ContactDTO> {
         return client.get("$baseUrl/contacts") {
             header("X-UUID", uuid)

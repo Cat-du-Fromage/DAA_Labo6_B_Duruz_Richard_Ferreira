@@ -34,10 +34,16 @@ import java.util.Calendar.*
 import java.util.Locale
 import androidx.compose.ui.tooling.preview.Preview
 
+/**
+ScreenContactEditor.kt
+ * Contact editor screen
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
 @Composable
 fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Contact) -> Unit , onDelete : () -> Unit) {
-
-    val context = LocalContext.current
 
     var name by remember { mutableStateOf(contact?.name ?: "") }
     var firstname by remember { mutableStateOf(contact?.firstname ?: "") }
@@ -50,6 +56,7 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
     var phoneNumber by remember { mutableStateOf(contact?.phoneNumber ?: "") }
 
 
+    // Helper function to create a contact
     fun createContact() : Contact? {
         if (name.isBlank()) return null
 
@@ -73,7 +80,7 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()), // Makes the form scrollable
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(text = if (contact == null) stringResource(R.string.screen_detail_title_new) else stringResource(R.string.screen_detail_title_edit), fontSize = 24.sp)
@@ -91,7 +98,6 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
             label = { Text(text = stringResource(R.string.screen_detail_email_subtitle)) },
             modifier = Modifier.fillMaxWidth())
 
-        // Use the new helper here
         DateField(label = stringResource(R.string.screen_detail_birthday_subtitle),
             value = birthday,
             onValueChange = { birthday = it })
@@ -109,7 +115,6 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
             label = { Text(text = stringResource(R.string.screen_detail_city_subtitle)) },
             modifier = Modifier.fillMaxWidth())
 
-        // Phone Type Radio Group
         Text(text = stringResource(R.string.screen_detail_phonetype_subtitle),
             modifier = Modifier.padding(top = 8.dp),
             style = MaterialTheme.typography.bodySmall)
@@ -136,12 +141,9 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
                 // Delete button only shown in Modification mode
                 Button(onClick = { onDelete() }, modifier = Modifier.weight(1f)) {
                     Text(text = stringResource(R.string.screen_detail_btn_delete))
-                    // TODO : delete Icon
-                    Icon(painterResource(R.drawable.add), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(18.dp))
                 }
             }
 
-            // Create/Save button
             Button(
                 onClick = {
                     val contact = createContact()
@@ -149,13 +151,12 @@ fun ScreenContactEditor(contact : Contact?, onCancel : () -> Unit, onSave : (Con
                 modifier = Modifier.weight(1f)
             ) {
                 Text(if (contact == null) stringResource(R.string.screen_detail_btn_create) else stringResource(R.string.screen_detail_btn_save))
-                // TODO : save Icon
-                Icon(painterResource(R.drawable.add), contentDescription = null, modifier = Modifier.padding(start = 4.dp).size(18.dp))
             }
         }
     }
 }
 
+// Helper function for the date field
 @Composable
 fun DateField(
     label: String,
@@ -165,31 +166,28 @@ fun DateField(
     val context = LocalContext.current
     val dateFormatter = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
 
-    // Format the date for display
     val dateText = value?.let { dateFormatter.format(it.time) } ?: ""
 
-    // Prepare the Dialog
     val datePickerDialog = remember {
-        val now = value ?: Calendar.getInstance()
+        val now = value ?: getInstance()
         DatePickerDialog(
             context,
             { _, year, month, day ->
-                val selected = Calendar.getInstance().apply { set(year, month, day) }
+                val selected = getInstance().apply { set(year, month, day) }
                 onValueChange(selected)
             },
-            now.get(Calendar.YEAR),
-            now.get(Calendar.MONTH),
-            now.get(Calendar.DAY_OF_MONTH)
+            now.get(YEAR),
+            now.get(MONTH),
+            now.get(DAY_OF_MONTH)
         )
     }
 
-    // The Field
     TextField(
         value = dateText,
         onValueChange = {},
         label = { Text(label) },
         readOnly = true,
-        enabled = true, // Keep enabled so it stays clickable
+        enabled = true,
         modifier = Modifier
             .fillMaxWidth()
             .onFocusChanged { if(it.isFocused) datePickerDialog.show() },
@@ -202,12 +200,13 @@ fun DateField(
     )
 }
 
+// Preview, might remove
 @Preview(showBackground = true, name = "Creation Mode")
 @Composable
 fun PreviewContactCreation() {
     MaterialTheme {
         ScreenContactEditor(
-            contact = null, // No contact = New Contact mode
+            contact = null,
             onCancel = {},
             onSave = {},
             onDelete = {}
@@ -215,12 +214,11 @@ fun PreviewContactCreation() {
     }
 }
 
-
+// Preview, might remove
 @Preview(showBackground = true, name = "Edit Mode")
 @Composable
 fun PreviewContactEdit() {
     MaterialTheme {
-        // Dummy contact to see the "Edit contact" screen with data
         val dummyContact = Contact(
             id = 1L,
             name = "Pelletier",

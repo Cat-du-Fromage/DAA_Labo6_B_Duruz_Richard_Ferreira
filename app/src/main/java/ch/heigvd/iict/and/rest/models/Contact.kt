@@ -6,6 +6,15 @@ import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 import java.util.*
 
+/**
+Contact.kt
+ * Contact entity & DTO
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
+
 enum class SyncState{
     SYNCED,
     CREATED,
@@ -35,7 +44,7 @@ data class ContactDTO(
     val id: Long? = null, // remoteId
     val name: String,
     val firstname: String?,
-    val birthday: String?, // ISO format from remote
+    val birthday: String?,
     val email: String?,
     val address: String?,
     val zip: String?,
@@ -48,7 +57,7 @@ private val isoFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.
 
 // Entity to DTO
 fun Contact.toDTO() = ContactDTO(
-    id = remoteId, // On envoie l'ID serveur
+    id = remoteId,
     name = name,
     firstname = firstname,
     birthday = birthday?.let { isoFormat.format(it.time) },

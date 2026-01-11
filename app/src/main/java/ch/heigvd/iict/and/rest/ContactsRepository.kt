@@ -1,7 +1,5 @@
 package ch.heigvd.iict.and.rest
 
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.Contact
 import ch.heigvd.iict.and.rest.models.SyncState
@@ -12,6 +10,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ContactsRepository.kt
+ * Repository for contacts
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
 class ContactsRepository(private val contactsDao: ContactsDao,
                          private val contactService: ContactApiService,
                          private val dispatcher: CoroutineDispatcher = Dispatchers.IO

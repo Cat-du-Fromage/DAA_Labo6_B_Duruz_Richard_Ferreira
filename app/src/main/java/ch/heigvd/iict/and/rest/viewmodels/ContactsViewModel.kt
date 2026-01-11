@@ -2,7 +2,6 @@ package ch.heigvd.iict.and.rest.viewmodels
 
 import android.app.Application
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
@@ -15,8 +14,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.core.content.edit
-import java.util.UUID
 
+/**
+ContactsViewModel.kt
+ * ViewModel for contacts
+Authors:
+ * Duruz Florian
+ * Ferreira Silva Sven
+ * Richard Aurélien
+ */
 class ContactsViewModel(app: Application) : AndroidViewModel(app) {
 
     private val repository = (application as ContactsApplication) .repository
